@@ -18,16 +18,14 @@ namespace ScarDesktop
 
         public static void StartWebServer()
         {
-            sendToConsole( "Conected to Chat Server ...");
             clientSocket.Connect("127.0.0.1", 8888);
             serverStream = clientSocket.GetStream();
 
 
-            Thread msgThread = new Thread(getMessage);
-            msgThread.Start();
+            var msgTask = Task.Factory.StartNew(getMessage);
         }
 
-        public static void getMessage()
+        private static void getMessage()
         {
             while (true)
             {
@@ -38,8 +36,8 @@ namespace ScarDesktop
                 serverStream.Read(inStream, 0, buffSize);
                 string returndata = System.Text.Encoding.ASCII.GetString(inStream);
 
-                if(returndata.Length > 1)
-                executeCommand("$" + returndata);
+                if (returndata.Length > 1)
+                    executeCommand("$" + returndata);
             }
         }
 
@@ -50,47 +48,13 @@ namespace ScarDesktop
             serverStream.Flush();
         }
 
-        
 
-
-
-        //Pipe Server
-
-        private static StreamWriter writer;
-
-        public static void StartPipeServer()
-        {
-            Task.Factory.StartNew(() =>
-            {
-                var server = new NamedPipeServerStream("ScarPipes");
-                server.WaitForConnection();
-                StreamReader reader = new StreamReader(server);
-                StreamWriter writer = new StreamWriter(server);
-                while (true)
-                {
-                    string input = reader.ReadLine();
-                    if (input.Length > 1)
-                        executeCommand(input);
-                }
-            });
-        }
-
-        public static void sendToConsole(string input)
-        {
-            writer.WriteLine(input);
-            writer.Flush();
-        }
-
-
-
-
-
-        private static void executeCommand(string input)
+        public static void executeCommand(string input)
         {
             //$ server commands
-            if (input.Equals("$started"))
+            if (input.Equals("$stop"))
             {
-                MainWindow.syncEvent.Set();
+                Console.WriteLine("Stopping");
             }
 
             //& console commands

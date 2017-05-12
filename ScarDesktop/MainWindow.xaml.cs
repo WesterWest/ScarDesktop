@@ -25,8 +25,6 @@ namespace ScarDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static ManualResetEvent syncEvent = new ManualResetEvent(false);
-
         public ObservableCollection<Transaction> Transactions;
 
         public MainWindow()
@@ -34,16 +32,19 @@ namespace ScarDesktop
             InitializeComponent();
 
             string[] consoleArgs = {""};
-            ScarDesktop.Program console = new ScarDesktop.Program();
 
-            Messaging.StartPipeServer();
-
-
-            syncEvent.WaitOne();
-            Messaging.StartWebServer();
+            var ReadConsoleTask = Task.Factory.StartNew(readConsole);
+            //Messaging.StartWebServer();
         }
 
-
-
+        private void readConsole()
+        {
+            while (true)
+            {
+                var input = Console.ReadLine();
+                if (input.Length > 1)
+                    Messaging.executeCommand(input);
+            }
+        }
     }
 }
