@@ -25,26 +25,42 @@ namespace ScarDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<Transaction> Transactions;
+        public ObservableCollection<FrameworkElement> TransactionFrame { get;set;}
+        private ObservableCollection<Transaction> Transactions = new ObservableCollection<Transaction>();
 
         public MainWindow()
         {
             InitializeComponent();
-
-            string[] consoleArgs = {""};
-
-            var ReadConsoleTask = Task.Factory.StartNew(readConsole);
-            //Messaging.StartWebServer();
+            var LoadTask = Task.Factory.StartNew(InitializeComponent);
         }
 
-        private void readConsole()
+        private void Load()
         {
-            while (true)
+            InitializeTransactionFrame();
+
+            Transactions.CollectionChanged += (kana, kana2) =>
             {
-                var input = Console.ReadLine();
-                if (input.Length > 1)
-                    Messaging.executeCommand(input);
-            }
+                TransactionFrame.Clear();
+                foreach (Transaction transaction in Transactions)
+                {
+                    Label label = new Label();
+                    label.Content = transaction.Name + "  " + transaction.Time;
+                    TransactionFrame.Add(label);
+                    Console.WriteLine("Update Event Invoked");
+                }
+
+            };
+
+            Transactions.Add(new Transaction("Kana", Time: new DateTime(2017, 5, 12, 18, 37, 56), Sum: 2400f));
+            Console.WriteLine(Transactions[0].Time);
+
+            var ReadConsoleTask = Task.Factory.StartNew(Messaging.readConsole);
+            Messaging.StartWebServer();
+        }
+
+        private void InitializeTransactionFrame()
+        {
+            TransactionFrame = new ObservableCollection<FrameworkElement>();
         }
     }
 }
