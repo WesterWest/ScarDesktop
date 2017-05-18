@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,32 +13,35 @@ namespace ScarDesktop
 {
     public class Messaging
     {
+        private static List<List<string>> clientCommands = new List<List<string>>();
+
+
         public static void StartWebServer()
         {
 
 
         }
 
-
-        public static void executeCommand(string input)
+        public static void ReadConsole()
         {
-            //$ server commands
-            if (input.Equals("$stop"))
-            {
-                Console.WriteLine("Stopping");
-            }
+            var Commands = new Commands();
+            var ServerCommands = new ServerCommands();
 
-            //& console commands
-
-        }
-
-        public static void readConsole()
-        {
             while (true)
             {
-                var input = Console.ReadLine();
-                if (input.Length > 1)
-                    executeCommand(input);
+                Console.Write(MainWindow.CurrentUser.Name + "> ");
+                var input = Console.ReadLine().Split(' ');
+                if (input.Length > 0)
+                    if (input.First().Equals('$'))
+                        if (ServerCommands.GetType().GetMethod(input[0]) != null)
+                            ServerCommands.GetType().GetMethod(input[0].Substring(1).ToLower()).Invoke(ServerCommands, new[] { input.Skip(1) });
+                        else
+                            Console.WriteLine("Invalid command!");
+                    else
+                        if (Commands.GetType().GetMethod(input[0]) != null)
+                        Commands.GetType().GetMethod(input[0].ToLower()).Invoke(Commands, new[] { input });
+                    else
+                        Console.WriteLine("Invalid command!");
             }
         }
     }

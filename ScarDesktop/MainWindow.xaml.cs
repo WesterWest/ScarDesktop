@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -25,42 +26,57 @@ namespace ScarDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<FrameworkElement> TransactionFrame { get;set;}
-        private ObservableCollection<Transaction> Transactions = new ObservableCollection<Transaction>();
+        public static ObservableCollection<Transaction> Transactions = new ObservableCollection<Transaction>();
+        public static List<User> Users = new List<User>();
+        public static User CurrentUser { get; set; }
 
         public MainWindow()
         {
+            Users.Add(new User("kana", "kana"));
+            CurrentUser = new User("default", null);
+            var isLogged = false;
+            while (!isLogged)
+            {
+                Console.Write(CurrentUser.Name + "> " + "Username: ");
+                var username = Console.ReadLine();
+                Console.Write(CurrentUser.Name + "> " + "Password: ");
+                var password = Console.ReadLine();
+                for (int i = 0; i < Users.Count; i++)
+                {
+                    if (username.Equals(Users[i].Name))
+                    {
+                        if (password.Equals(Users[i].GetPassword(0xFFFFFFFF)))
+                        {
+                            CurrentUser = Users[i];
+                            isLogged = true;
+                            break;
+                        }
+                        else
+                            Console.WriteLine("Invalid password");
+                    }
+                    else
+                        Console.WriteLine("Invalid username");
+                }
+            }
+
             InitializeComponent();
-            var LoadTask = Task.Factory.StartNew(InitializeComponent);
+            Load();
         }
 
         private void Load()
         {
-            InitializeTransactionFrame();
+            var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.CollectionChanged += (kana, kana2) =>
+            Transactions.Add(new Transaction("Kana", Time: new DateTime(2017, 5, 12, 18, 37, 56), Sum: 2400f, Shared: new List<User>(), Owner: Users[0]));
+            Console.WriteLine(Transactions[0].Time);
+
+            TransactionsListBox.ItemsSource = Transactions;
+            TransactionsListBox.SelectionChanged += (kana, podouble) =>
             {
-                TransactionFrame.Clear();
-                foreach (Transaction transaction in Transactions)
-                {
-                    Label label = new Label();
-                    label.Content = transaction.Name + "  " + transaction.Time;
-                    TransactionFrame.Add(label);
-                    Console.WriteLine("Update Event Invoked");
-                }
 
             };
 
-            Transactions.Add(new Transaction("Kana", Time: new DateTime(2017, 5, 12, 18, 37, 56), Sum: 2400f));
-            Console.WriteLine(Transactions[0].Time);
-
-            var ReadConsoleTask = Task.Factory.StartNew(Messaging.readConsole);
             Messaging.StartWebServer();
-        }
-
-        private void InitializeTransactionFrame()
-        {
-            TransactionFrame = new ObservableCollection<FrameworkElement>();
         }
     }
 }
