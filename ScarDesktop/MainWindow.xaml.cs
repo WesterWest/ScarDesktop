@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -28,19 +28,19 @@ namespace ScarDesktop
     {
         public static ObservableCollection<Transaction> Transactions = new ObservableCollection<Transaction>();
         public static List<User> Users = new List<User>();
-        public static User CurrentUser { get; set; }
+        public static User CurrentUser;
 
         public MainWindow()
         {
             Users.Add(new User("kana", "kana"));
-            CurrentUser = new User("default", null);
-            var isLogged = false;
+            CurrentUser = null;
+            bool isLogged = false;
             while (!isLogged)
             {
                 Console.Write(CurrentUser.Name + "> " + "Username: ");
-                var username = Console.ReadLine();
+                string username = Console.ReadLine();
                 Console.Write(CurrentUser.Name + "> " + "Password: ");
-                var password = Console.ReadLine();
+                string password = Console.ReadLine();
                 for (int i = 0; i < Users.Count; i++)
                 {
                     if (username.Equals(Users[i].Name))
@@ -67,7 +67,7 @@ namespace ScarDesktop
         {
             var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.Add(new Transaction("Kana", Time: new DateTime(2017, 5, 12, 18, 37, 56), Sum: 2400f, Shared: new List<User>(), Owner: Users[0]));
+            Transactions.Add(new Transaction("Kana", Time: DateTime.Now, Sum: 2400f, Shared: new List<User>(), Owner: Users[0]));
             Console.WriteLine(Transactions[0].Time);
 
             TransactionsListBox.ItemsSource = Transactions;
