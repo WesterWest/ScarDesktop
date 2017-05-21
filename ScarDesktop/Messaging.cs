@@ -30,9 +30,9 @@ namespace ScarDesktop
             while (true)
             {
                 Console.Write(MainWindow.CurrentUser.Name + "> ");
-                var input = Console.ReadLine().Split(' ');
+                string[] input = Console.ReadLine().Split(' ');
                 if (input.Length > 0)
-                    if (input.First().Equals('$'))
+                    if (input[0] == "$")
                         if (ServerCommands.GetType().GetMethod(input[0]) != null)
                             ServerCommands.GetType().GetMethod(input[0].Substring(1).ToLower()).Invoke(ServerCommands, new[] { input.Skip(1) });
                         else

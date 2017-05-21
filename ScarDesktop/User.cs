@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security;
+using System.Runtime.InteropServices;
 
 namespace ScarDesktop
 {
@@ -23,7 +24,7 @@ namespace ScarDesktop
         {
             if(User.Key == Key)
             {
-                return Password.ToString();
+                return ConvertToUnsecureString(Password);
             }
             else
             {
@@ -32,7 +33,7 @@ namespace ScarDesktop
             }
         }
         
-        public void SetPassword(String Password) {
+        public SecureString SetPassword(String Password) {
            if (String.IsNullOrWhiteSpace(Password))
                 throw new ArgumentNullException("Password is not in correct format.");
 
@@ -43,6 +44,23 @@ namespace ScarDesktop
 
             SecStr.MakeReadOnly();
             return SecStr;
+        }
+
+        private string ConvertToUnsecureString(SecureString securePassword)
+        {
+            if (securePassword == null)
+                throw new ArgumentNullException("securePassword");
+
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(securePassword);
+                return Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+            }
         }
     }
 }

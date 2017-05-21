@@ -37,15 +37,15 @@ namespace ScarDesktop
             bool isLogged = false;
             while (!isLogged)
             {
-                Console.Write(CurrentUser.Name + "> " + "Username: ");
+                Console.Write("ScarDesktop> " + "Username: ");
                 string username = Console.ReadLine();
-                Console.Write(CurrentUser.Name + "> " + "Password: ");
+                Console.Write("ScarDesktop> " + "Password: ");
                 string password = Console.ReadLine();
                 for (int i = 0; i < Users.Count; i++)
                 {
-                    if (username.Equals(Users[i].Name))
+                    if (username == Users[i].Name)
                     {
-                        if (password.Equals(Users[i].GetPassword(0xFFFFFFFF)))
+                        if (password == Users[i].GetPassword(0xFFFFFFFF))
                         {
                             CurrentUser = Users[i];
                             isLogged = true;
