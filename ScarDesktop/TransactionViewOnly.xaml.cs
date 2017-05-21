@@ -35,7 +35,7 @@ namespace ScarDesktop
             Users.Add(CurrentTransaction.Owner.Name + "owner");
             foreach(var User in CurrentTransaction.Shared)
             {
-                Users.Add(string.Format("{0}  {1}", User.Value.Name, User.Key));
+                Users.Add(string.Format("{0}  {1}", User.Value, User.Key.Name));
             }
 
             UsersListBox.ItemsSource = Users;

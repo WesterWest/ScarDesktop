@@ -11,14 +11,17 @@ namespace ScarDesktop
         public enum SharingFlags { hide, see, edit, paySplit, payFull }
 
         public string Name { get; set; }
-        public DateTime Time { get; set; }
-        public float Sum { get; set; }
+        public DateTime Time { get; }
+        public float Sum { get; }
         public User Owner { get; private set; }
-        public Dictionary<SharingFlags, User> Shared { get; set; }
+        public Dictionary<User, SharingFlags> Shared { get; set; }
 
-
-
-        public Transaction(string Name, DateTime Time, float Sum, Dictionary<SharingFlags, User> Shared, User Owner)
+        /* [note lang="cz"]
+         *  Jen by to chtělo zauvažovat nad gettrama a settrama... Něco by nemělo být měněno a něco zas jo.
+         * [/note]
+         */
+         
+        public Transaction(string Name, DateTime Time, float Sum, User Owner, Dictionary<User, SharingFlags> Shared)
         {
             this.Time = Time;
             this.Sum = Sum;

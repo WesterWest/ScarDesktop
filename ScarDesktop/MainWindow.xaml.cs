@@ -67,7 +67,7 @@ namespace ScarDesktop
         {
             var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.Add(new Transaction("Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<Transaction.SharingFlags, User>(), Owner: Users[0]));
+            Transactions.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Owner: Users[0], Shared: new Dictionary<User, Transaction.SharingFlags>() ) );
             Console.WriteLine(Transactions[0].Time);
 
             TransactionsListBox.ItemsSource = Transactions;
