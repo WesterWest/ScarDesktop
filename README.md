@@ -1,0 +1,3 @@
+# ScarDesktop
+
+Just another super secret .NET application for Windows written in C# and with love...
