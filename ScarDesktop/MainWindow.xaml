@@ -7,16 +7,41 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="873.231" Width="1330.826">
     <Grid>
-        <ListBox x:Name="TransactionsListBox" HorizontalAlignment="Right" Width="225">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel x:Name="TransactionsStackPanel" Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Name}"/>
-                        <TextBlock Text="   "/>
-                        <TextBlock Text="{Binding Path=Time}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid  HorizontalAlignment="Right" Width="225">
+            <TabControl x:Name="MenuTabControll" SelectionChanged="MenuTabControl_SelectionChanged">
+                <TabItem x:Name="TransactionsTab" Header="Transactions">
+                    <ListBox x:Name="TransactionsListBox" HorizontalAlignment="Right" Width="219">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel x:Name="TransactionsStackPanel" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Path=Name}"/>
+                                    <TextBlock Text="   "/>
+                                    <TextBlock Text="{Binding Path=Time}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
+        <DockPanel Margin="0,0,0,815">
+            <Menu DockPanel.Dock="Top" Margin="0,0,229,0">
+                <MenuItem Header="_ScarDesktop">
+                    <MenuItem Header="_Refresh" />
+                    <MenuItem Header="_Save" />
+                    <Separator />
+                    <MenuItem Header="_Exit" />
+                </MenuItem>
+                <MenuItem x:Name="UserMenuItem">
+                    <MenuItem Header="_Preferences"/>
+                    <MenuItem Header="_Log Out"/>
+                </MenuItem>
+                <MenuItem Header="_Settings">
+
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <Frame x:Name="DynamicSideGrid" Margin="0,27,230,0">
+        </Frame>
     </Grid>
 </Window>

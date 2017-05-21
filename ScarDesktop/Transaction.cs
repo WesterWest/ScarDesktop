@@ -8,13 +8,17 @@ namespace ScarDesktop
 {
     public class Transaction
     {
+        public enum SharingFlags { hide, see, edit, paySplit, payFull }
+
         public string Name { get; set; }
         public DateTime Time { get; set; }
         public float Sum { get; set; }
         public User Owner { get; private set; }
-        public List<User> Shared { get; set; }
+        public Dictionary<SharingFlags, User> Shared { get; set; }
 
-        public Transaction(string Name, DateTime Time, float Sum, List<User> Shared, User Owner)
+
+
+        public Transaction(string Name, DateTime Time, float Sum, Dictionary<SharingFlags, User> Shared, User Owner)
         {
             this.Time = Time;
             this.Sum = Sum;

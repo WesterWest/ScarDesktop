@@ -67,16 +67,27 @@ namespace ScarDesktop
         {
             var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.Add(new Transaction("Kana", Time: DateTime.Now, Sum: 2400f, Shared: new List<User>(), Owner: Users[0]));
+            Transactions.Add(new Transaction("Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<Transaction.SharingFlags, User>(), Owner: Users[0]));
             Console.WriteLine(Transactions[0].Time);
 
             TransactionsListBox.ItemsSource = Transactions;
             TransactionsListBox.SelectionChanged += (kana, podouble) =>
             {
-
+                DynamicSideGrid.Content = new TransactionViewOnly(TransactionsListBox.SelectedItem);
             };
 
+
+            UserMenuItem.Header = CurrentUser.Name;
+
+            
+
             Messaging.StartWebServer();
+        }
+
+        private void MenuTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TransactionsTab.IsSelected) ;
+                //do stuff
         }
     }
 }

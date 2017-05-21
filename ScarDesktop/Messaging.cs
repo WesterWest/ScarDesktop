@@ -29,7 +29,7 @@ namespace ScarDesktop
 
             while (true)
             {
-                Console.Write(MainWindow.CurrentUser.Name + "> ");
+                Console.Write("ScarDesktop@" + MainWindow.CurrentUser.Name + "> ");
                 string[] input = Console.ReadLine().Split(' ');
                 if (input.Length > 0)
                     if (input[0] == "$")
