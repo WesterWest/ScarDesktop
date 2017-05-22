@@ -32,6 +32,7 @@ namespace ScarDesktop
 
         public MainWindow()
         {
+            
             Users.Add(new User("kana", "kana"));
             CurrentUser = null;
             bool isLogged = false;
@@ -60,6 +61,8 @@ namespace ScarDesktop
             }
 
             InitializeComponent();
+
+            Crypt.Encrypt("kana", "lalakaajahjahaj");
             Load();
         }
 
