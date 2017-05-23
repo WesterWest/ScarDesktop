@@ -13,9 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static ScarDesktop.Transaction;
 
-namespace ScarDesktop
+namespace ScarDesktop.TransactionTabs
 {
     /// <summary>
     /// Interaction logic for TransactionViewOnly.xaml
@@ -32,8 +31,7 @@ namespace ScarDesktop
             ObservableCollection<string> Users = new ObservableCollection<string>();
 
 
-            Users.Add(CurrentTransaction.Owner.Name + "owner");
-            foreach(var User in CurrentTransaction.Shared)
+            foreach (var User in CurrentTransaction.Shared)
             {
                 Users.Add(string.Format("{0}  {1}", User.Value, User.Key.Name));
             }
@@ -42,3 +40,4 @@ namespace ScarDesktop
         }
     }
 }
+

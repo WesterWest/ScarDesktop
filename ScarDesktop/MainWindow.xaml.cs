@@ -1,3 +1,4 @@
+using ScarDesktop.TransactionTabs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,27 +43,21 @@ namespace ScarDesktop
                 string username = Console.ReadLine();
                 Console.Write("ScarDesktop> " + "Password: ");
                 string password = Console.ReadLine();
-                for (int i = 0; i < Users.Count; i++)
-                {
-                    if (username == Users[i].Name)
-                    {
-                        if (password == Users[i].GetPassword(0xFFFFFFFF))
-                        {
-                            CurrentUser = Users[i];
-                            isLogged = true;
-                            break;
-                        }
-                        else
-                            Console.WriteLine("Invalid password");
-                    }
-                    else
-                        Console.WriteLine("Invalid username");
-                }
+
+                var SelectedUser = (from c in Users
+                                    where c.Name == username && c.GetPassword(0xFFFFFFFF) == password
+                                    select c);
+                CurrentUser = SelectedUser.Any() ? SelectedUser.First() : null; 
+
+                if (CurrentUser == null)
+                    Console.WriteLine("Invalid username or password");
+                else
+                    isLogged = true;
             }
 
             InitializeComponent();
 
-            Crypt.Encrypt("kana", "lalakaajahjahaj");
+            Crypt.Encrypt("kana", "Mam rad vlaky");
             Load();
         }
 
@@ -70,19 +65,36 @@ namespace ScarDesktop
         {
             var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Owner: Users[0], Shared: new Dictionary<User, Transaction.SharingFlags>() ) );
+            Transactions.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<User, Transaction.SharingFlags> { { Users[0], Transaction.SharingFlags.hide } }) );
             Console.WriteLine(Transactions[0].Time);
 
-            TransactionsListBox.ItemsSource = Transactions;
+            //this is actually the same as below, just this is easier to understand
+            //var nonHidden = from x in Transactions
+            //                select (from t in x.Shared.Values where t != Transaction.SharingFlags.hide select t);
+
+            TransactionsListBox.ItemsSource = (ObservableCollection<Transaction>)Transactions.Select(x => x.Shared.Values.Where(t => t != Transaction.SharingFlags.hide));
             TransactionsListBox.SelectionChanged += (kana, podouble) =>
             {
-                DynamicSideGrid.Content = new TransactionViewOnly(TransactionsListBox.SelectedItem);
+                var permission = (from t in ((Transaction)TransactionsListBox.SelectedItem).Shared
+                where t.Key == CurrentUser
+                select t.Value);
+
+                switch (permission.Any() ? permission.First() : Transaction.SharingFlags.hide)
+                {
+                    case Transaction.SharingFlags.hide:
+                        DynamicSideGrid.Content = new TransactionHide();
+                        break;
+                    case Transaction.SharingFlags.see:
+                        DynamicSideGrid.Content = new TransactionViewOnly(TransactionsListBox.SelectedItem);
+                        break;
+                    default:
+                        DynamicSideGrid.Content = new TransactionViewOnly(TransactionsListBox.SelectedItem);
+                        break;
+                }
             };
 
 
             UserMenuItem.Header = CurrentUser.Name;
-
-            
 
             Messaging.StartWebServer();
         }

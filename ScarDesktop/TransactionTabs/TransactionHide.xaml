@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="ScarDesktop.TransactionTabs.TransactionHide"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScarDesktop.TransactionTabs"
+             mc:Ignorable="d" 
+             d:DesignHeight="815" d:DesignWidth="1093">
+
+        <Grid>
+            <Label Content="Unsuficient permissions to view this content"/>
+        </Grid>
+</UserControl>

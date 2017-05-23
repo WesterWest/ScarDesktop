@@ -64,7 +64,10 @@
     <Compile Include="Messaging.cs" />
     <Compile Include="ServerCommands.cs" />
     <Compile Include="Transaction.cs" />
-    <Compile Include="TransactionViewOnly.xaml.cs">
+    <Compile Include="TransactionTabs\TransactionHide.xaml.cs">
+      <DependentUpon>TransactionHide.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TransactionTabs\TransactionViewOnly.xaml.cs">
       <DependentUpon>TransactionViewOnly.xaml</DependentUpon>
     </Compile>
     <Compile Include="User.cs" />
@@ -80,7 +83,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="TransactionViewOnly.xaml">
+    <Page Include="TransactionTabs\TransactionHide.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TransactionTabs\TransactionViewOnly.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
