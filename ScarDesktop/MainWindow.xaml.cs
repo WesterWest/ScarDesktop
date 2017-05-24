@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.Specialized;
 
 namespace ScarDesktop
 {
@@ -28,6 +29,7 @@ namespace ScarDesktop
     public partial class MainWindow : Window
     {
         public static ObservableCollection<Transaction> Transactions = new ObservableCollection<Transaction>();
+        public static ObservableCollection<Transaction> ShowingTransactions = new ObservableCollection<Transaction>();
         public static List<User> Users = new List<User>();
         public static User CurrentUser;
 
@@ -65,14 +67,14 @@ namespace ScarDesktop
         {
             var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<User, Transaction.SharingFlags> { { Users[0], Transaction.SharingFlags.hide } }) );
+            Transactions.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<User, Transaction.SharingFlags> { { Users[0], Transaction.SharingFlags.see } }) );
             Console.WriteLine(Transactions[0].Time);
+            
+            Transactions.CollectionChanged += (kana, podouble) => { Transactions_CollectionChanged(); };
+            //this is actually invoking the same event, jusst i need to invoke it manually
+            Transactions_CollectionChanged();
 
-            //this is actually the same as below, just this is easier to understand
-            //var nonHidden = from x in Transactions
-            //                select (from t in x.Shared.Values where t != Transaction.SharingFlags.hide select t);
-
-            TransactionsListBox.ItemsSource = (ObservableCollection<Transaction>)Transactions.Select(x => x.Shared.Values.Where(t => t != Transaction.SharingFlags.hide));
+            TransactionsListBox.ItemsSource = ShowingTransactions;
             TransactionsListBox.SelectionChanged += (kana, podouble) =>
             {
                 var permission = (from t in ((Transaction)TransactionsListBox.SelectedItem).Shared
@@ -97,6 +99,20 @@ namespace ScarDesktop
             UserMenuItem.Header = CurrentUser.Name;
 
             Messaging.StartWebServer();
+        }
+
+        private void Transactions_CollectionChanged()
+        {
+            ShowingTransactions.Clear();
+
+            Transaction.SharingFlags SharingFlags;
+            //this is actually the same as below, just this is easier to understand
+            //var nonHidden = from x in Transactions
+            //                where x.Shared.TryGetValue(CurrentUser, out SharingFlags) && SharingFlags != Transaction.SharingFlags.hide
+            //                select x;
+            //ShowingTransactions = new ObservableCollection<Transaction>(nonHidden.OfType<Transaction>());
+
+            ShowingTransactions = new ObservableCollection<Transaction>(Transactions.Where(x => x.Shared.TryGetValue(CurrentUser, out SharingFlags) && SharingFlags != Transaction.SharingFlags.hide).OfType<Transaction>());
         }
 
         private void MenuTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
