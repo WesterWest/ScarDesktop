@@ -12,5 +12,11 @@ namespace ScarDesktop
         {
             Console.WriteLine("Stopping");
         }
+
+        public void save(string[] args)
+        {
+            Crypt.Encrypt("kana", "kana");
+            Console.WriteLine("Saved succesfully!");
+        }
     }
 }
