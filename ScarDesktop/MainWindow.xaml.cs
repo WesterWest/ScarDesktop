@@ -28,8 +28,8 @@ namespace ScarDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static ObservableCollection<Transaction> Transactions = new ObservableCollection<Transaction>();
-        public static ObservableCollection<Transaction> ShowingTransactions = new ObservableCollection<Transaction>();
+        public static ObservableCollection<Transaction> TransactionPool = new ObservableCollection<Transaction>();
+        public static ObservableCollection<Transaction> ThisUserTransactionPool = new ObservableCollection<Transaction>();
         public static List<User> Users = new List<User>();
         public static User CurrentUser;
 
@@ -67,14 +67,14 @@ namespace ScarDesktop
         {
             var ReadConsoleTask = Task.Factory.StartNew(Messaging.ReadConsole);
 
-            Transactions.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<User, Transaction.SharingFlags> { { Users[0], Transaction.SharingFlags.see } }) );
-            Console.WriteLine(Transactions[0].Time);
+            TransactionPool.Add( new Transaction( "Kana", Time: DateTime.Now, Sum: 2400f, Shared: new Dictionary<User, Transaction.SharingFlags> { { Users[0], Transaction.SharingFlags.see } }) );
+            Console.WriteLine(TransactionPool[0].Time);
             
-            Transactions.CollectionChanged += (kana, podouble) => { Transactions_CollectionChanged(); };
+            TransactionPool.CollectionChanged += (kana, podouble) => { Transactions_CollectionChanged(); };
             //this is actually invoking the same event, jusst i need to invoke it manually
             Transactions_CollectionChanged();
 
-            TransactionsListBox.ItemsSource = ShowingTransactions;
+            TransactionsListBox.ItemsSource = ThisUserTransactionPool;
             TransactionsListBox.SelectionChanged += (kana, podouble) =>
             {
                 var permission = (from t in ((Transaction)TransactionsListBox.SelectedItem).Shared
@@ -103,7 +103,7 @@ namespace ScarDesktop
 
         private void Transactions_CollectionChanged()
         {
-            ShowingTransactions.Clear();
+            ThisUserTransactionPool.Clear();
 
             Transaction.SharingFlags SharingFlags;
             //this is actually the same as below, just this is easier to understand
@@ -112,7 +112,9 @@ namespace ScarDesktop
             //                select x;
             //ShowingTransactions = new ObservableCollection<Transaction>(nonHidden.OfType<Transaction>());
 
-            ShowingTransactions = new ObservableCollection<Transaction>(Transactions.Where(x => x.Shared.TryGetValue(CurrentUser, out SharingFlags) && SharingFlags != Transaction.SharingFlags.hide).OfType<Transaction>());
+            //selects all transactions, that can be viewed by the user, by checking if he is in the Shared dictionary and he has enough permissions
+            ThisUserTransactionPool = new ObservableCollection<Transaction>(TransactionPool.Where(t => t.Shared.TryGetValue(CurrentUser, out SharingFlags)
+            && SharingFlags != Transaction.SharingFlags.hide).OfType<Transaction>());
         }
 
         private void MenuTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
